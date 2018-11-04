@@ -1,0 +1,21 @@
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.ecuaciones
+{
+    margin:0 auto;
+    width: fit-content;
+}
+
+.ecuaciones>div
+{
+    margin-left: 30px;
+}
+
+.ecuaciones th
+{
+    text-align: center;
+}
