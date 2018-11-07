@@ -13,15 +13,20 @@ $(document).ready(function () {
 	];
 
     console.log(normas.vectores.normap(vec, 3));
+
+    console.log("Diagonal dominante:");
+    console.log(validarMatrixDiagonalmenteDominante(matrixCoeficientes));
+    console.log("Diagonal estricta dominante:");
+    console.log(validarMatrixEstrictamenteDominante(matrixCoeficientes));
 });
 
 //Funciones
 
 var vectorInicial = [];
 var matrixCoeficientes = [
-	[1,2,3],
+	[20,2,3],
 	[1,5,3],
-	[5,9,2]
+	[5,10,15]
 ];
 
 var normas = 
@@ -106,33 +111,40 @@ var normas =
 	}
 };
 
-function validarMatrixDiagonalmenteDominante()
+function validarMatrixDiagonalmenteDominante(matrix)
 {
 	//el modulo de cada elemento de la diagonal tiene que ser mayor o igual que la suma de los demas elementos de la misma fila sumados en modulo.
 
-    let tmp = 0, diagonal = 0;
+	return validarMatriz(matrix, (valorDiagonal, sumaNoDiagonal) => valorDiagonal >= sumaNoDiagonal);
+}
+
+function validarMatrixEstrictamenteDominante(matrix)
+{
+	return validarMatriz(matrix, (valorDiagonal, sumaNoDiagonal) => valorDiagonal > sumaNoDiagonal);
+}
+
+function validarMatriz(matrix, comparador)
+{
+    let noDiagonal = 0, diagonal = 0;
 
     for(let i = 0; i < matrixCoeficientes.length;i++)
     {
         for(let j = 0; j < matrixCoeficientes[i].length;j++)
         {
-            if(i+1 != j)
-                tmp += Math.abs(matrixCoeficientes[i][j]);
+            if(i != j)
+                noDiagonal += Math.abs(matrixCoeficientes[i][j]);
             else
                 diagonal = matrixCoeficientes[i][j];
-
-            console.log("[" + i + "][" + j + "] = " + matrixCoeficientes[i][j]);
         }
 
-        if(diagonal < tmp){
-
+        if(!comparador(diagonal, noDiagonal)){
+            return {status:false, faulty: i};
         }
+
+        diagonal = noDiagonal = 0;
     }
-}
 
-function validarMatrixEstrictamenteDominante()
-{
-	//igual pero solo mayor
+    return {status: true};
 }
 
 var metodos = 
