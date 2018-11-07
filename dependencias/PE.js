@@ -127,14 +127,14 @@ function validarMatriz(matrix, comparador)
 {
     let noDiagonal = 0, diagonal = 0;
 
-    for(let i = 0; i < matrixCoeficientes.length;i++)
+    for(let i = 0; i < matrix.length;i++)
     {
-        for(let j = 0; j < matrixCoeficientes[i].length;j++)
+        for(let j = 0; j < matrix[i].length;j++)
         {
             if(i != j)
-                noDiagonal += Math.abs(matrixCoeficientes[i][j]);
+                noDiagonal += Math.abs(matrix[i][j]);
             else
-                diagonal = matrixCoeficientes[i][j];
+                diagonal = matrix[i][j];
         }
 
         if(!comparador(diagonal, noDiagonal)){
