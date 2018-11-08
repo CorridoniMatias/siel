@@ -28,13 +28,17 @@ $(document).ready(function () {
     console.log("Jacobi: matriz T");
     console.log(metodos.jacobi.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior));
     console.log("Jacobi: matriz C");
-    console.log(metodos.jacobi.matrizC(split.diagonal, terminosIndependientes ));
+    console.log(metodos.jacobi.matrizC(split.diagonal, null, terminosIndependientes ));
     console.log("Gauss: matriz T");
     console.log( metodos.gauss.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior));
     console.log("Gauss: matriz C");
     console.log( metodos.gauss.matrizC(split.diagonal,split.triangularInferior,terminosIndependientes));
 
+    console.log("Resolucion por Jacobi: vector inicial = [1,1,1]");
+    console.log( iterar(metodos.jacobi, matrixCoeficientes, terminosIndependientes, [[1],[1],[1]], 0.003, [2,3,Infinity]) );
 
+    console.log("Resolucion por Gauss: vector inicial = [1,1,1]");
+    console.log( iterar(metodos.gauss, matrixCoeficientes, terminosIndependientes, [[1],[1],[1]], 0.003, [2,3,Infinity]) );
 });
 
 //Funciones
@@ -126,6 +130,9 @@ var normas =
 		{
 			//raiz p-esima de la suma de los elementos del vector en modulo a la p
 
+            if(p == Infinity)
+                return this.normaInfinito(vector);
+
             let newvector = vector.map(v => Math.abs(v)).map(v => Math.pow(v, p));
 
             let suma = newvector.reduce((acumulado, valorActual) => acumulado + valorActual);
@@ -190,11 +197,11 @@ function splitMatrix(matrix)
             {
                 diagonal[i][j] = 0;
                 triangularInferior[i][j] = 0;
-                triangularSuperior[i][j] = matrix[i][j];
+                triangularSuperior[i][j] = -matrix[i][j];
             } else
             {
                 diagonal[i][j] = 0;
-                triangularInferior[i][j] = matrix[i][j];
+                triangularInferior[i][j] = -matrix[i][j];
                 triangularSuperior[i][j] = 0;
             }
         }
@@ -211,7 +218,7 @@ var metodos =
 		{
 			return math.multiply( math.inv(diagonal), math.add(triangularInferior, triangularSuperior));
 		},
-		matrizC: function(diagonal, terminosIndependientes)
+		matrizC: function(diagonal, triangularInferior, terminosIndependientes)
 		{
 			return math.multiply( math.inv(diagonal), terminosIndependientes );
 		}
@@ -249,6 +256,36 @@ function jacobi()
 	
 	//para gauss la matriz T es la inversa de (la diagonal menos la inferior) por la superior
 	// para c es igual pero en vez de multiplicar por la superior, mutiplico por la de terminos independientes.
+}
+
+function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vectorInicial, cotaError, normasDeCorte)
+{
+    let vectorActual = [[0],[0],[0]], vectorAnterior = vectorInicial;
+
+    let split = splitMatrix(matrizCoeficientes);
+
+    let norma = Infinity;
+    let normasint = [];
+    while(true)
+    {
+        vectorActual = math.add( math.multiply(metodo.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior), vectorAnterior),
+            metodo.matrizC(split.diagonal, split.triangularInferior, vectorTerminosIndependientes));
+
+        for(let i = 0; i < normasDeCorte.length;i++)
+        {
+            normasint[i] = normas.vectores.normap( math.subtract(vectorAnterior, vectorActual) , normasDeCorte[i]);
+        }
+
+        if(normasint.every(e => e < cotaError))
+            break;
+
+        vectorAnterior[0][0] = vectorActual[0][0];
+        vectorAnterior[1][0] = vectorActual[1][0];
+        vectorAnterior[2][0] = vectorActual[2][0];
+    }
+
+    return vectorActual;
+
 }
 
 //tienen que haber dos vectores el actual y el anterior. (en realidad son matrices columnas xd)
