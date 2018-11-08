@@ -1,10 +1,14 @@
 $(document).ready(function () {
 
-	console.log(normas.matrices.norma1());
+	console.log("Matriz coeficientes partida: ");
+    console.log( splitMatrix(matrixCoeficientes) );
 
-    console.log(normas.matrices.normaInfinito());
 
-    console.log(normas.matrices.norma2());
+	console.log("Norma 1: " + normas.matrices.norma1(matrixCoeficientes));
+
+    console.log("Norma inf: " + normas.matrices.normaInfinito(matrixCoeficientes));
+
+    console.log("Norma 2: " + normas.matrices.norma2(matrixCoeficientes));
 
     let vec = [
     	[1],
@@ -12,12 +16,25 @@ $(document).ready(function () {
 		[3]
 	];
 
-    console.log(normas.vectores.normap(vec, 3));
+    console.log("Norma 3 de un vector: " + normas.vectores.normap(vec, 3));
 
     console.log("Diagonal dominante:");
     console.log(validarMatrixDiagonalmenteDominante(matrixCoeficientes));
     console.log("Diagonal estricta dominante:");
     console.log(validarMatrixEstrictamenteDominante(matrixCoeficientes));
+
+    let split = splitMatrix(matrixCoeficientes);
+
+    console.log("Jacobi: matriz T");
+    console.log(metodos.jacobi.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior));
+    console.log("Jacobi: matriz C");
+    console.log(metodos.jacobi.matrizC(split.diagonal, terminosIndependientes ));
+    console.log("Gauss: matriz T");
+    console.log( metodos.gauss.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior));
+    console.log("Gauss: matriz C");
+    console.log( metodos.gauss.matrizC(split.diagonal,split.triangularInferior,terminosIndependientes));
+
+
 });
 
 //Funciones
@@ -29,52 +46,59 @@ var matrixCoeficientes = [
 	[5,10,15]
 ];
 
+
+var terminosIndependientes = [
+	[1],
+	[2],
+	[3]
+];
+
 var normas = 
 {
 	matrices:
 	{
-		norma1: function()
+		norma1: function(matrix)
 		{
 			//Sumar por cada columna en valor absoluto los valores y quedarse con el mayor de cada uno.
 			let tmp = [];
 
-			for(let i = 0; i < matrixCoeficientes.length;i++)
-				for(let j = 0; j < matrixCoeficientes[i].length;j++)
+			for(let i = 0; i < matrix.length;i++)
+				for(let j = 0; j < matrix[i].length;j++)
 				{
 					if(typeof tmp[j] === "undefined")
 						tmp[j] = 0;
 
-                    tmp[j] += Math.abs(matrixCoeficientes[i][j]);
+                    tmp[j] += Math.abs(matrix[i][j]);
 				}
 
 			return Math.max(...tmp);
 		},
-		normaInfinito: function()
+		normaInfinito: function(matrix)
 		{
 			//sumar por cada fila en valor absoluto los valores y quedarse con el mayor de cada uno
             let tmp = [];
 
-            for(let i = 0; i < matrixCoeficientes.length;i++)
-                for(let j = 0; j < matrixCoeficientes[i].length;j++)
+            for(let i = 0; i < matrix.length;i++)
+                for(let j = 0; j < matrix[i].length;j++)
                 {
                     if(typeof tmp[j] === "undefined")
                         tmp[j] = 0;
 
-                    tmp[i] += Math.abs(matrixCoeficientes[i][j]);
+                    tmp[i] += Math.abs(matrix[i][j]);
                 }
 
             return Math.max(...tmp);
 		},
-		norma2: function()
+		norma2: function(matrix)
 		{
 
 			//la transpuesta de la matrix de coeficientes por la matrix de coeficientes y de ahi sacar el mayor en modulo de los autovalores y despues la raiz cuadrada del autovalor.
 
-            let transpuesta = math.transpose(matrixCoeficientes);
+            let transpuesta = math.transpose(matrix);
 
             console.log(transpuesta);
 
-            let crosseada = math.multiply(transpuesta, matrixCoeficientes);
+            let crosseada = math.multiply(transpuesta, matrix);
 
             let autovalores = numeric.eig(crosseada).lambda.x;
 
@@ -147,27 +171,73 @@ function validarMatriz(matrix, comparador)
     return {status: true};
 }
 
+function splitMatrix(matrix)
+{
+    let diagonal = new Array(matrix.length), triangularSuperior = new Array(matrix.length), triangularInferior = new Array(matrix.length);
+
+    for(let i = 0; i < matrix.length;i++) {
+
+    	diagonal[i] = new Array(matrix[i].length);
+        triangularSuperior[i] = new Array(matrix[i].length);
+        triangularInferior[i] = new Array(matrix[i].length);
+
+        for (let j = 0; j < matrix[i].length; j++) {
+            if(i == j) {
+                diagonal[i][j] = matrix[i][j];
+                triangularInferior[i][j] = 0;
+                triangularSuperior[i][j] = 0;
+            } else if(j > i)
+            {
+                diagonal[i][j] = 0;
+                triangularInferior[i][j] = 0;
+                triangularSuperior[i][j] = matrix[i][j];
+            } else
+            {
+                diagonal[i][j] = 0;
+                triangularInferior[i][j] = matrix[i][j];
+                triangularSuperior[i][j] = 0;
+            }
+        }
+    }
+
+    return {diagonal:diagonal, triangularSuperior: triangularSuperior, triangularInferior: triangularInferior};
+}
+
 var metodos = 
 {
 	jacobi:
 	{
-		matrizT: function()
+		matrizT: function(diagonal, triangularInferior, triangularSuperior)
 		{
+			return math.multiply( math.inv(diagonal), math.add(triangularInferior, triangularSuperior));
 		},
-		matrizC: function()
+		matrizC: function(diagonal, terminosIndependientes)
 		{
+			return math.multiply( math.inv(diagonal), terminosIndependientes );
 		}
 	},
 	gauss:
 	{
-		matrizT: function()
+		matrizT: function(diagonal, triangularInferior, triangularSuperior)
 		{
+			return this.multiply(diagonal, triangularInferior, triangularSuperior);
 		},
-		matrizC: function()
+		matrizC: function(diagonal, triangularInferior, terminosIndependientes)
 		{
+            return this.multiply(diagonal, triangularInferior, terminosIndependientes);
+		},
+		invDiagonalInferior: function(diagonal, triangularInferior)
+		{
+			return math.inv( math.subtract(diagonal, triangularInferior) );
+		},
+		multiply:function(diagonal, triangularInferior, multiply)
+		{
+            return math.multiply( this.invDiagonalInferior(diagonal, triangularInferior) , multiply);
 		}
 	}
 };
+
+
 
 function jacobi()
 {
