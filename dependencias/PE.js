@@ -16,6 +16,7 @@ $(document).ready(function () {
 
             let clon = body.find("tr:nth-child(1)").clone();
             clon.find("td:nth-child(1)").text(cantEcuaciones);
+            clon.find("input").removeClass("error").val("");
             body.append(clon);
 
             body.find("tr").append("<td><input type='number' /></td>")
@@ -59,7 +60,7 @@ $(document).ready(function () {
 
     $("[data-action='calcular']").click(function () {
 
-        /*let matrixCoeficientes = [];
+        let matrixCoeficientes = [];
         let terminosIndependientes = [];
         let cotaError = 0;
         let vectorInicial = [];
@@ -74,7 +75,17 @@ $(document).ready(function () {
 
         inputs.each(function (j, e) {
 
-            matrixCoeficientes[i][col] = parseInt(e.value);
+            matrixCoeficientes[i][col] = parseFloat(e.value);
+
+            if(isNaN(matrixCoeficientes[i][col]))
+            {
+                $(e).addClass("error");
+                return false;
+            } else
+            {
+                $(e).removeClass("error");
+            }
+
             col++;
             if(j == 0)
                 return true;
@@ -104,7 +115,7 @@ $(document).ready(function () {
         console.log(terminosIndependientes);
         console.log(vectorInicial);
 
-        return;*/
+        return;
         console.log("Matriz coeficientes partida: ");
         console.log( splitMatrix(matrixCoeficientes) );
 
@@ -140,17 +151,26 @@ $(document).ready(function () {
         console.log( metodos.gauss.matrizC(split.diagonal,split.triangularInferior,terminosIndependientes));
 
         console.log("Resolucion por Jacobi: vector inicial = [1,1,1]");
-        console.log( iterar(metodos.jacobi, matrixCoeficientes, terminosIndependientes, [[1],[1],[1]], 0.0001, [2,3,Infinity], (i, vectorActual, cortes) => {console.log( cortes )}));
+        console.log( iterar(metodos.jacobi, matrixCoeficientes, terminosIndependientes, [[1],[1],[1]], 0.001, [2,3,Infinity], (i, vectorActual, cortes) => {
+            console.log( cortes )
+
+            $.each(cortes, function (j,e) {
+                $("body").append("<br /> Iteracion: " + i + " Norma: " + e.norma + ". Valor: " + e.valor + ". Cortar: " + e.cortar);
+            });
+
+        }));
 
         console.log("Resolucion por Gauss: vector inicial = [1,1,1]");
-        console.log( iterar(metodos.gauss, matrixCoeficientes, terminosIndependientes, [[1],[1],[1]], 0.0001, [2,3,Infinity], (i, vectorActual, cortes) => {console.log( cortes )}));
+        console.log( iterar(metodos.gauss, matrixCoeficientes, terminosIndependientes, [[1],[1],[1]], 0.1, [2,3,Infinity], (i, vectorActual, cortes) => {
+            //console.log( cortes )
+        }));
 
 
     });
 });
 
 var cantEcuaciones = 3;
-var cantDecimales = 6;
+var cantDecimales = 2;
 
 //Funciones
 
@@ -158,7 +178,7 @@ var vectorInicial = [];
 var matrixCoeficientes = [
 	[20,2,3],
 	[1,5,3],
-	[5,10,15]
+	[5,9,15]
 ];
 
 var terminosIndependientes = [
@@ -368,7 +388,7 @@ function jacobi()
 	// para c es igual pero en vez de multiplicar por la superior, mutiplico por la de terminos independientes.
 }
 
-function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vectorInicial, cotaError, normasDeCorte, onIteration)
+async function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vectorInicial, cotaError, normasDeCorte, onIteration)
 {
     let vectorActual = [[0],[0],[0]], vectorAnterior = vectorInicial;
 
@@ -377,8 +397,8 @@ function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vector
     let norma = Infinity;
     let normasint = [];
     let normasReturn = [];
-    let normaTmp = "";
-    let iteraciones = 0;
+
+    let iteraciones = 1;
     while(true)
     {
         vectorActual = math.map(math.add( math.multiply(metodo.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior), vectorAnterior),
@@ -386,19 +406,16 @@ function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vector
 
         for(let i = 0; i < normasDeCorte.length;i++)
         {
-            normasint[i] = normas.vectores.normap( math.subtract(vectorAnterior, vectorActual) , normasDeCorte[i]).toFixed(cantDecimales);
+            //normasint[i] = parseFloat(normas.vectores.normap( math.subtract(vectorAnterior, vectorActual) , normasDeCorte[i]).toFixed(cantDecimales));
 
-            if(normasint[i] < cotaError)
-                normaTmp = "Corto";
-            else
-                normaTmp = "Sigo";
+            normasint[i] = parseFloat(normas.vectores.normap( math.subtract(vectorAnterior, vectorActual) , normasDeCorte[i]).toFixed(cantDecimales));
 
-            normasReturn[i] = {norma: normasDeCorte[i], valor: normasint[i], cortar:normaTmp };
+            normasReturn[i] = {norma: normasDeCorte[i], valor: normasint[i], cortar:normasint[i] < cotaError };
         }
 
         onIteration(iteraciones, vectorActual, normasReturn);
 
-        if(normasint.every(e => e < cotaError))
+        if(normasint.every(e => {console.log(e + " < " + cotaError); return e < cotaError;}))
             break;
 
         vectorAnterior[0][0] = vectorActual[0][0];
@@ -406,9 +423,9 @@ function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vector
         vectorAnterior[2][0] = vectorActual[2][0];
         iteraciones++;
 
+        if(iteraciones > 100)
+            break;
     }
-
-
 
     return vectorActual;
 

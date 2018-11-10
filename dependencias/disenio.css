@@ -82,3 +82,8 @@ div.actions
 {
     padding-left:8px;
 }
+
+input.error
+{
+    border-color: #a94442 !important;
+}
