@@ -1,45 +1,156 @@
 $(document).ready(function () {
 
-	console.log("Matriz coeficientes partida: ");
-    console.log( splitMatrix(matrixCoeficientes) );
+    //Controller
+    
+    $("div.actions>button").click(function () {
+        let coefs = $("#coficientes");
+
+        if($(this).attr("data-action") == "add")
+        {
+            cantEcuaciones++;
+
+            //agregamos matriz coeficientes
+            coefs.find("thead>tr").append("<th>" + cantEcuaciones + "</th>");
+
+            let body = coefs.find("tbody");
+
+            let clon = body.find("tr:nth-child(1)").clone();
+            clon.find("td:nth-child(1)").text(cantEcuaciones);
+            body.append(clon);
+
+            body.find("tr").append("<td><input type='number' /></td>")
+
+            //agregamos vector incognita
+
+            $("tbody#incognitas").append("<tr><td>X" + cantEcuaciones + "</td></tr>");
+
+            //agregamos vector termino independiente
+            $("tbody#terminosIndependientes").append("<tr> <td><input type='number' /></td> </tr>");
 
 
-	console.log("Norma 1: " + normas.matrices.norma1(matrixCoeficientes));
+            //vector inicial
+            $(".vectorInicial tr").append("<td><input type='number' /></td>");
 
-    console.log("Norma inf: " + normas.matrices.normaInfinito(matrixCoeficientes));
+        } else if($(this).attr("data-action") == "remove")
+        {
+            if(cantEcuaciones == 2)
+                return;
 
-    console.log("Norma 2: " + normas.matrices.norma2(matrixCoeficientes));
+            //agregamos matriz coeficientes
+            coefs.find("thead>tr>th:last-child").detach();
 
-    let vec = [
-    	[1],
-		[-20],
-		[3]
-	];
+            let body = coefs.find("tbody");
 
-    console.log("Norma 3 de un vector: " + normas.vectores.normap(vec, 3));
+            body.find("tr:last-child").detach();
+            body.find("tr>td:last-child").detach();
 
-    console.log("Diagonal dominante:");
-    console.log(validarMatrixDiagonalmenteDominante(matrixCoeficientes));
-    console.log("Diagonal estricta dominante:");
-    console.log(validarMatrixEstrictamenteDominante(matrixCoeficientes));
+            //agregamos vector incognita
 
-    let split = splitMatrix(matrixCoeficientes);
+            $("tbody#incognitas>tr:last-child").detach();
 
-    console.log("Jacobi: matriz T");
-    console.log(metodos.jacobi.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior));
-    console.log("Jacobi: matriz C");
-    console.log(metodos.jacobi.matrizC(split.diagonal, null, terminosIndependientes ));
-    console.log("Gauss: matriz T");
-    console.log( metodos.gauss.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior));
-    console.log("Gauss: matriz C");
-    console.log( metodos.gauss.matrizC(split.diagonal,split.triangularInferior,terminosIndependientes));
+            $("tbody#terminosIndependientes>tr:last-child").detach();
 
-    console.log("Resolucion por Jacobi: vector inicial = [1,1,1]");
-    console.log( iterar(metodos.jacobi, matrixCoeficientes, terminosIndependientes, [[1],[1],[1]], 0.003, [2,3,Infinity]) );
+            $(".vectorInicial tr>td:last-child").detach();
 
-    console.log("Resolucion por Gauss: vector inicial = [1,1,1]");
-    console.log( iterar(metodos.gauss, matrixCoeficientes, terminosIndependientes, [[1],[1],[1]], 0.003, [2,3,Infinity]) );
+            cantEcuaciones--;
+        }
+    });
+
+
+    $("[data-action='calcular']").click(function () {
+
+        /*let matrixCoeficientes = [];
+        let terminosIndependientes = [];
+        let cotaError = 0;
+        let vectorInicial = [];
+
+        //obtenemos la matrix de coeficientes
+        let coeficientes = $("#coficientes tbody>tr");
+        let i = 0, col = 0;
+
+        matrixCoeficientes[0] = new Array(coeficientes.length);
+
+        let inputs = coeficientes.find("input");
+
+        inputs.each(function (j, e) {
+
+            matrixCoeficientes[i][col] = parseInt(e.value);
+            col++;
+            if(j == 0)
+                return true;
+
+            if(j == inputs.length - 1)
+                return false;
+
+            if((j+1) % coeficientes.length  == 0)
+            {
+                i++;
+                col = 0;
+                matrixCoeficientes[i] = new Array(coeficientes.length);
+            }
+        });
+
+        $("#terminosIndependientes input").each(function (i,e) {
+            terminosIndependientes[i] = [];
+            terminosIndependientes[i][0] = parseInt(e.value);
+        });
+
+        $(".vectorInicial input").each(function (i,e) {
+            vectorInicial[i] = [];
+            vectorInicial[i][0] = parseInt(e.value);
+        });
+
+        console.log(matrixCoeficientes);
+        console.log(terminosIndependientes);
+        console.log(vectorInicial);
+
+        return;*/
+        console.log("Matriz coeficientes partida: ");
+        console.log( splitMatrix(matrixCoeficientes) );
+
+
+        console.log("Norma 1: " + normas.matrices.norma1(matrixCoeficientes));
+
+        console.log("Norma inf: " + normas.matrices.normaInfinito(matrixCoeficientes));
+
+        console.log("Norma 2: " + normas.matrices.norma2(matrixCoeficientes));
+
+        let vec = [
+            [1],
+            [-20],
+            [3]
+        ];
+
+        console.log("Norma 3 de un vector: " + normas.vectores.normap(vec, 3));
+
+        console.log("Diagonal dominante:");
+        console.log(validarMatrixDiagonalmenteDominante(matrixCoeficientes));
+        console.log("Diagonal estricta dominante:");
+        console.log(validarMatrixEstrictamenteDominante(matrixCoeficientes));
+
+        let split = splitMatrix(matrixCoeficientes);
+
+        console.log("Jacobi: matriz T");
+        console.log(metodos.jacobi.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior));
+        console.log("Jacobi: matriz C");
+        console.log(metodos.jacobi.matrizC(split.diagonal, null, terminosIndependientes ));
+        console.log("Gauss: matriz T");
+        console.log( metodos.gauss.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior));
+        console.log("Gauss: matriz C");
+        console.log( metodos.gauss.matrizC(split.diagonal,split.triangularInferior,terminosIndependientes));
+
+        console.log("Resolucion por Jacobi: vector inicial = [1,1,1]");
+        console.log( iterar(metodos.jacobi, matrixCoeficientes, terminosIndependientes, [[1],[1],[1]], 0.0001, [2,3,Infinity], (i, vectorActual, cortes) => {console.log( cortes )}));
+
+        console.log("Resolucion por Gauss: vector inicial = [1,1,1]");
+        console.log( iterar(metodos.gauss, matrixCoeficientes, terminosIndependientes, [[1],[1],[1]], 0.0001, [2,3,Infinity], (i, vectorActual, cortes) => {console.log( cortes )}));
+
+
+    });
 });
+
+var cantEcuaciones = 3;
+var cantDecimales = 6;
 
 //Funciones
 
@@ -49,7 +160,6 @@ var matrixCoeficientes = [
 	[1,5,3],
 	[5,10,15]
 ];
-
 
 var terminosIndependientes = [
 	[1],
@@ -258,7 +368,7 @@ function jacobi()
 	// para c es igual pero en vez de multiplicar por la superior, mutiplico por la de terminos independientes.
 }
 
-function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vectorInicial, cotaError, normasDeCorte)
+function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vectorInicial, cotaError, normasDeCorte, onIteration)
 {
     let vectorActual = [[0],[0],[0]], vectorAnterior = vectorInicial;
 
@@ -266,15 +376,27 @@ function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vector
 
     let norma = Infinity;
     let normasint = [];
+    let normasReturn = [];
+    let normaTmp = "";
+    let iteraciones = 0;
     while(true)
     {
-        vectorActual = math.add( math.multiply(metodo.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior), vectorAnterior),
-            metodo.matrizC(split.diagonal, split.triangularInferior, vectorTerminosIndependientes));
+        vectorActual = math.map(math.add( math.multiply(metodo.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior), vectorAnterior),
+            metodo.matrizC(split.diagonal, split.triangularInferior, vectorTerminosIndependientes)), (e) => e.toFixed(cantDecimales));
 
         for(let i = 0; i < normasDeCorte.length;i++)
         {
-            normasint[i] = normas.vectores.normap( math.subtract(vectorAnterior, vectorActual) , normasDeCorte[i]);
+            normasint[i] = normas.vectores.normap( math.subtract(vectorAnterior, vectorActual) , normasDeCorte[i]).toFixed(cantDecimales);
+
+            if(normasint[i] < cotaError)
+                normaTmp = "Corto";
+            else
+                normaTmp = "Sigo";
+
+            normasReturn[i] = {norma: normasDeCorte[i], valor: normasint[i], cortar:normaTmp };
         }
+
+        onIteration(iteraciones, vectorActual, normasReturn);
 
         if(normasint.every(e => e < cotaError))
             break;
@@ -282,7 +404,11 @@ function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vector
         vectorAnterior[0][0] = vectorActual[0][0];
         vectorAnterior[1][0] = vectorActual[1][0];
         vectorAnterior[2][0] = vectorActual[2][0];
+        iteraciones++;
+
     }
+
+
 
     return vectorActual;
 

@@ -4,6 +4,11 @@
     float: none;
 }
 
+td>input
+{
+    width:100px;
+}
+
 .ecuaciones
 {
     margin:0 auto;
@@ -18,4 +23,62 @@
 .ecuaciones th
 {
     text-align: center;
+}
+
+.incognitas tbody>tr>td
+{
+    padding: 11px 20px 11px 20px;
+}
+
+th:not(.name)
+{
+  font-weight: normal;
+}
+
+th.name
+{
+    text-decoration: underline;
+    font-style: italic;
+}
+
+.panel-heading.head-ecuaciones
+{
+    text-align:right;
+}
+
+.panel-heading>span
+{
+    position:absolute;
+    margin-left:0;
+    left:15px;
+    top:15px;
+}
+
+div.actions
+{
+
+    display:inline-block;
+    right:0;
+}
+
+.vectorInicial td
+{
+    border:0 !important;
+    width:10px !important;
+}
+
+.vectorInicial input
+{
+    width:70px;
+}
+
+.vectorInicial
+{
+    display:inline-table;
+    width:1px;
+}
+
+.inputVectorInicial
+{
+    padding-left:8px;
 }

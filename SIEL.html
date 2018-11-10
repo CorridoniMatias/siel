@@ -68,42 +68,47 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Ingrese las ecuaciones lineales
+                    <div class="panel-heading head-ecuaciones" style="position: relative;">
+                        <span>Ingrese las ecuaciones lineales</span>
+
+                        <div class="actions">
+                            <button class="btn btn-sm btn-success" data-action="add">+</button>
+                            <button class="btn btn-sm btn-danger" data-action="remove">-</button>
+                        </div>
                     </div>
                     <!-- /.panel-heading -->
-                    <div class="panel-body">
+                    <div class="panel-body"  style="overflow: auto;max-height: 300px;">
                         <div class="ecuaciones">
-                            <div class="vcenter">
+                            <div class="vcenter" style="overflow-x: auto;max-width: 500px;">
                                 <div class="table-responsive">
-                                    <table class="table">
+                                    <table class="table" id="coficientes">
                                         <thead>
                                         <tr>
-                                            <th>#</th>
-                                            <th>First Name</th>
-                                            <th>Last Name</th>
-                                            <th>Username</th>
+                                            <th class="name">A</th>
+                                            <th>1</th>
+                                            <th>2</th>
+                                            <th>3</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td><input type="number" /></td>
-                                            <td><input type="number" /></td>
-                                            <td><input type="number" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td><input type="number" /></td>
-                                            <td><input type="number" /></td>
-                                            <td><input type="number" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td>3</td>
-                                            <td><input type="number" /></td>
-                                            <td><input type="number" /></td>
-                                            <td><input type="number" /></td>
-                                        </tr>
+                                            <tr>
+                                                <td>1</td>
+                                                <td><input type="number" /></td>
+                                                <td><input type="number" /></td>
+                                                <td><input type="number" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td><input type="number" /></td>
+                                                <td><input type="number" /></td>
+                                                <td><input type="number" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>3</td>
+                                                <td><input type="number" /></td>
+                                                <td><input type="number" /></td>
+                                                <td><input type="number" /></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -113,25 +118,25 @@
                                 <i class="fa fa-fw fa-circle" style="font-size: 10px;"></i>
                             </div>
 
-                            <div class="vcenter">
+                            <div class="vcenter incognitas">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
                                         <tr>
-                                            <th>X</th>
+                                            <th class="name">X</th>
 
                                         </tr>
                                         </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td> <input type="number" /> </td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="number" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="number" /></td>
-                                        </tr>
+                                        <tbody id="incognitas">
+                                            <tr>
+                                                <td> X1 </td>
+                                            </tr>
+                                            <tr>
+                                                <td>X2</td>
+                                            </tr>
+                                            <tr>
+                                                <td>X3</td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -147,26 +152,27 @@
                                     <table class="table">
                                         <thead>
                                         <tr>
-                                            <th>B</th>
+                                            <th class="name">B</th>
 
                                         </tr>
                                         </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td><input type="number" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="number" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="number" /></td>
-                                        </tr>
+                                        <tbody id="terminosIndependientes">
+                                            <tr>
+                                                <td><input type="number" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td><input type="number" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td><input type="number" /></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
                         <!-- /.table-responsive -->
+
                     </div>
                     <!-- /.panel-body -->
                 </div>
@@ -176,11 +182,57 @@
         </div>
         <!-- /.row -->
 
-        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Configurar variables de soluci&oacute;n
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="col-md-7">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="cantDecimales" class="col-sm-2 control-label">Cantidad de decimales</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" class="form-control" name="cantDecimales" id="cantDecimales" value="15" placeholder="Ejemplo: 15" min="2">
+                                    </div>
+                                </div>
 
-        <!-- /.row -->
+                                <div class="form-group">
+                                    <label for="cotaError" class="col-sm-2 control-label">Cota de Error</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" class="form-control" id="cotaError" name="cotaError" placeholder="Ejemplo: 0.000001" min="0">
+                                    </div>
+                                </div>
 
-        <!-- /.row -->
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Vector Inicial</label>
+                                    <div class="table-responsive inputVectorInicial">
+                                        <table class="table vectorInicial">
+                                            <tbody>
+                                            <tr>
+                                                <td><input type="number" /></td>
+                                                <td><input type="number" /></td>
+                                                <td><input type="number" /></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                            </form>
+                        </div>
+                        <button type="submit" class="btn btn-success" style="width: 100%;" data-action="calcular">Calcular</button>
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+
     </div>
     <!-- /#page-wrapper -->
 
