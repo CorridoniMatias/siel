@@ -47,8 +47,6 @@ var normas =
 
             let transpuesta = math.transpose(matrix);
 
-            console.log(transpuesta);
-
             let crosseada = math.multiply(transpuesta, matrix);
 
             let autovalores = numeric.eig(crosseada).lambda.x;
@@ -234,7 +232,7 @@ function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vector
 
         onIteration(iteraciones, vectorActual, normasReturn);
 
-        if(normasint.every(e => {console.log(e + " < " + cotaError); return e < cotaError;}))
+        if(normasint.every(e => e < cotaError))
             break;
 
         for(let i = 0; i < vectorAnterior.length;i++)
