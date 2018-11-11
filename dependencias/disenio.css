@@ -92,3 +92,13 @@ input.error
 {
     text-align: center;
 }
+
+#sistema tr:first-child>th:first-child
+{
+    border-right:3px double gray;
+}
+
+.doubleborderleft
+{
+    border-left:3px double gray;
+}

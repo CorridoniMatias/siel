@@ -1,284 +1,8 @@
-$(document).ready(function () {
-
-    //Controller
-    
-    $("div.actions>button").click(function () {
-        let coefs = $("#coficientes");
-
-        if($(this).attr("data-action") == "add")
-        {
-            cantEcuaciones++;
-
-            //agregamos matriz coeficientes
-            coefs.find("thead>tr").append("<th>" + cantEcuaciones + "</th>");
-
-            let body = coefs.find("tbody");
-
-            let clon = body.find("tr:nth-child(1)").clone();
-            clon.find("td:nth-child(1)").text(cantEcuaciones);
-            clon.find("input").removeClass("error").val("");
-            body.append(clon);
-
-            body.find("tr").append("<td><input type='number' /></td>")
-
-            //agregamos vector incognita
-
-            $("tbody#incognitas").append("<tr><td>X" + cantEcuaciones + "</td></tr>");
-
-            //agregamos vector termino independiente
-            $("tbody#terminosIndependientes").append("<tr> <td><input type='number' /></td> </tr>");
-
-
-            //vector inicial
-            $(".vectorInicial tr").append("<td><input type='number' /></td>");
-
-        } else if($(this).attr("data-action") == "remove")
-        {
-            if(cantEcuaciones == 2)
-                return;
-
-            //agregamos matriz coeficientes
-            coefs.find("thead>tr>th:last-child").detach();
-
-            let body = coefs.find("tbody");
-
-            body.find("tr:last-child").detach();
-            body.find("tr>td:last-child").detach();
-
-            //agregamos vector incognita
-
-            $("tbody#incognitas>tr:last-child").detach();
-
-            $("tbody#terminosIndependientes>tr:last-child").detach();
-
-            $(".vectorInicial tr>td:last-child").detach();
-
-            cantEcuaciones--;
-        }
-    });
-
-
-    $("[data-action='calcular']").click(function () {
-
-        let matrixCoeficientes = [];
-        let terminosIndependientes = [];
-        let cotaError = 0;
-        let vectorInicial = [];
-        let error = false;
-
-        //obtenemos la matrix de coeficientes
-        let coeficientes = $("#coficientes tbody>tr");
-        let i = 0, col = 0;
-
-        matrixCoeficientes[0] = new Array(coeficientes.length);
-
-        let inputs = coeficientes.find("input");
-
-        inputs.each(function (j, e) {
-
-            matrixCoeficientes[i][col] = parseFloat(e.value);
-
-            if(isNaN(matrixCoeficientes[i][col]))
-            {
-                $(e).addClass("error");
-                error = true;
-                return false;
-            } else
-            {
-                $(e).removeClass("error");
-            }
-
-            col++;
-            if(j == 0)
-                return true;
-
-            if(j == inputs.length - 1)
-                return false;
-
-            if((j+1) % coeficientes.length  == 0)
-            {
-                i++;
-                col = 0;
-                matrixCoeficientes[i] = new Array(coeficientes.length);
-            }
-        });
-
-        if(error) return;
-
-        $("#terminosIndependientes input").each(function (i,e) {
-            terminosIndependientes[i] = [];
-            terminosIndependientes[i][0] = parseFloat(e.value);
-
-            if(isNaN(terminosIndependientes[i][0]))
-            {
-                $(e).addClass("error");
-                error = true;
-                return false;
-            } else
-            {
-                $(e).removeClass("error");
-            }
-        });
-
-        if(error) return;
-
-        $(".vectorInicial input").each(function (i,e) {
-            vectorInicial[i] = [];
-            vectorInicial[i][0] = parseFloat(e.value);
-
-            if(isNaN(vectorInicial[i][0]))
-            {
-                $(e).addClass("error");
-                error = true;
-                return false;
-            } else
-            {
-                $(e).removeClass("error");
-            }
-        });
-
-        if(error) return;
-
-        cantDecimales = parseInt($("#cantDecimales").val());
-
-        if(isNaN(cantDecimales))
-        {
-            alert("La cantidad de decimales debe ser un número entero!");
-            return;
-        } else
-        {
-            $("#cantDecimales").val(cantDecimales);
-        }
-
-        cotaError = parseFloat($("#cotaError").val());
-
-        if(isNaN(cotaError))
-        {
-            alert("La cota de error debe ser un número!");
-            return;
-        }
-
-        let decimales = cotaError.countDecimals();
-        if(cantDecimales <= decimales)
-        {
-            alert("La cota de error elegida tiene " + decimales + " decimales, mientras que usted eligió una precisión decimal de " + cantDecimales + " dígitos. Al ser este último mayor es muy probable que nunca se llegue a una solución!")
-        }
-
-
-        console.log("Matriz coeficientes partida: ");
-        console.log( splitMatrix(matrixCoeficientes) );
-
-        let normasDom = $("#normas td");
-
-        normasDom[0].innerText = normas.matrices.norma1(matrixCoeficientes);
-        normasDom[1].innerText = normas.matrices.norma2(matrixCoeficientes);
-        normasDom[2].innerText = normas.matrices.normaInfinito(matrixCoeficientes);
-
-        normasDom[3].innerHTML = formatearErrorDominante( validarMatrixDiagonalmenteDominante(matrixCoeficientes) );
-
-        normasDom[4].innerHTML = formatearErrorDominante( validarMatrixEstrictamenteDominante(matrixCoeficientes) );
-
-
-
-        let sistema = $("#sistema");
-
-        let body = sistema.find("tbody");
-
-        body.html("");
-
-        let head = sistema.find("thead>tr:last-child");
-        head.html("")
-            .append("<th>Iteraci&oacute;n</th>");
-
-        for(let i = 1; i <= cantEcuaciones; i++)
-        {
-            head.append("<th>X" + i + "</th>");
-        }
-
-        head.append("<th>Norma 1</th>")
-            .append("<th>Norma 2</th>")
-            .append("<th>Norma Infinito</th>");
-
-
-
-        console.log("Norma 1: " + normas.matrices.norma1(matrixCoeficientes));
-
-        console.log("Norma inf: " + normas.matrices.normaInfinito(matrixCoeficientes));
-
-        console.log("Norma 2: " + normas.matrices.norma2(matrixCoeficientes));
-
-
-        console.log("Diagonal dominante:");
-        console.log(validarMatrixDiagonalmenteDominante(matrixCoeficientes));
-        console.log("Diagonal estricta dominante:");
-        console.log(validarMatrixEstrictamenteDominante(matrixCoeficientes));
-
-        let split = splitMatrix(matrixCoeficientes);
-
-        console.log("Jacobi: matriz T");
-        console.log(metodos.jacobi.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior));
-        console.log("Jacobi: matriz C");
-        console.log(metodos.jacobi.matrizC(split.diagonal, null, terminosIndependientes ));
-        console.log("Gauss: matriz T");
-        console.log( metodos.gauss.matrizT(split.diagonal, split.triangularInferior, split.triangularSuperior));
-        console.log("Gauss: matriz C");
-        console.log( metodos.gauss.matrizC(split.diagonal,split.triangularInferior,terminosIndependientes));
-
-        console.log("Resolucion por Jacobi: vector inicial = [1,1,1]");
-
-        console.log( iterar(metodos.jacobi, matrixCoeficientes, terminosIndependientes, vectorInicial, cotaError, [2,3,Infinity], (i, vectorActual, cortes) => {
-
-            let builder = "<tr><td>" + i + "</td>";
-
-            $.each(vectorActual, function (j,e) {
-                builder += "<td>" + e[0] + "</td>";
-            });
-
-            $.each(cortes, function (j,e) {
-
-                builder += "<td>" + ((e.cortar) ? "Cortar" : "Continuar") + "</td>";
-
-                //$("body").append("<br /> Iteracion: " + i + " Norma: " + e.norma + ". Valor: " + e.valor + ". Cortar: " + e.cortar);
-            });
-            builder += "</tr>";
-
-            body.append(builder);
-        }));
-
-        console.log("Resolucion por Gauss: vector inicial = [1,1,1]");
-        console.log( iterar(metodos.gauss, matrixCoeficientes, terminosIndependientes, vectorInicial, cotaError, [2,3,Infinity], (i, vectorActual, cortes) => {
-            //console.log( cortes )
-        }));
-
-
-    });
-});
-
-function formatearErrorDominante(resultado)
-{
-    if(resultado.status)
-        return "<span class='text-success'>Si</span>";
-    else
-        return "<span class='text-danger'>No. Fila erronea: " + (resultado.faulty+1 + "</span>");
-}
+var MAXIMASITERACIONES = 200; //Cuanto iterar antes de decir que no converge
 
 var cantEcuaciones = 3;
 var cantDecimales = 2;
 
-//Funciones
-
-var vectorInicial = [];
-var matrixCoeficientes = [
-	[20,2,3],
-	[1,5,3],
-	[5,9,15]
-];
-
-var terminosIndependientes = [
-	[1],
-	[2],
-	[3]
-];
 
 var normas = 
 {
@@ -444,7 +168,8 @@ var metodos =
 		matrizC: function(diagonal, triangularInferior, terminosIndependientes)
 		{
 			return math.multiply( math.inv(diagonal), terminosIndependientes );
-		}
+		},
+        nombre: "Jacobi"
 	},
 	gauss:
 	{
@@ -463,25 +188,21 @@ var metodos =
 		multiply:function(diagonal, triangularInferior, multiply)
 		{
             return math.multiply( this.invDiagonalInferior(diagonal, triangularInferior) , multiply);
-		}
+		},
+        nombre: "Gauss Seidel"
 	}
 };
 
+//Hay que armar 3 matrices: 1 con los elementos de la diagonal, 1 con triangular inferior y otra con la triangular superior
+//Con las 3 obtenidas calculo las matrices T y C
 
+//Para  Jacobi la matriz T es la inversa de la martiz diagonal por la suma de las dos triangulares
+//Pra Jaboci la matriz C es la inversa de la diagonal por la de terminos independientes
 
-function jacobi()
-{
-	//Hay que armar 3 matrices: 1 con los elementos de la diagonal, 1 con triangular inferior y otra con la triangular superior
-	//Con las 3 obtenidas calculo las matrices T y C
-	
-	//Para  Jacobi la matriz T es la inversa de la martiz diagonal por la suma de las dos triangulares
-	//Pra Jaboci la matriz C es la inversa de la diagonal por la de terminos independientes
-	
-	//para gauss la matriz T es la inversa de (la diagonal menos la inferior) por la superior
-	// para c es igual pero en vez de multiplicar por la superior, mutiplico por la de terminos independientes.
-}
+//para gauss la matriz T es la inversa de (la diagonal menos la inferior) por la superior
+// para c es igual pero en vez de multiplicar por la superior, mutiplico por la de terminos independientes.
 
-async function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vectorInicial, cotaError, normasDeCorte, onIteration)
+function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, vectorInicial, cotaError, normasDeCorte, onIteration)
 {
     let vectorActual = [], vectorAnterior = vectorInicial;
 
@@ -523,22 +244,23 @@ async function iterar(metodo, matrizCoeficientes, vectorTerminosIndependientes, 
 
         iteraciones++;
 
-        if(iteraciones > 100)
-            break;
+        if(iteraciones > MAXIMASITERACIONES)
+            return false;
     }
 
-    return vectorActual;
+    return true;
 
 }
 
+
+//Funcion helper para obtener cantidad de decimales
 Number.prototype.countDecimals = function () {
     if(Math.floor(this.valueOf()) === this.valueOf()) return 0;
+
+    let decimalPart = this.toString().split(".")[1];
+
+    if(typeof decimalPart === "undefined")
+        return this.toString().split("e")[1].substring(1);
+
     return this.toString().split(".")[1].length || 0;
 };
-
-//tienen que haber dos vectores el actual y el anterior. (en realidad son matrices columnas xd)
-//el anterior empieza siendo el vector inicial y el actual es la matrix T por el vector anterior mas la matriz C (es matriz columna)
-//lo anterior es for y un if y corta cuando la norma del vector anterior menos el actual es menor a la cota de error. kmo c para xd?
-
-
-

@@ -192,6 +192,19 @@
                     <div class="panel-body">
                         <div class="col-md-7">
                             <form class="form-horizontal">
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">M&eacute;todo de resoluci&oacute;n</label>
+                                    <div class="col-sm-10">
+                                        <label class="radio-inline">
+                                            <input type="radio" name="metodo" id="metodojabobi" value="jacobi" checked="checked"> Jacobi
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="metodo" id="metodogauss" value="gauss"> Gauss Seidel
+                                        </label>
+                                    </div>
+                                </div>
+
                                 <div class="form-group">
                                     <label for="cantDecimales" class="col-sm-2 control-label">Cantidad de decimales</label>
                                     <div class="col-sm-10">
@@ -226,7 +239,7 @@
                         </div>
                         <div style="width: 100%;display: block;text-align: center;">
                             <button type="submit" class="btn btn-success" style="width: 49%;display: inline-block;" data-action="calcular" >Calcular</button>
-                            <button type="submit" class="btn btn-danger" style="width: 49%;display: inline-block;" data-action="calcular">Limpiar</button>
+                            <button type="submit" class="btn btn-danger" style="width: 49%;display: inline-block;" data-action="limpiar">Limpiar</button>
                         </div>
                     </div>
                     <!-- /.panel-body -->
@@ -239,7 +252,7 @@
         <div id="resolucion">
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="panel panel-default">
+                    <div class="panel panel-default hidden" id="panel-coeficientes">
                         <div class="panel-heading">
                             Datos de la Matriz de Coeficientes
                         </div>
@@ -281,9 +294,9 @@
 
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="panel panel-default">
+                    <div class="panel panel-default hidden" id="panel-resolucion">
                         <div class="panel-heading">
-                            Resoluci&oacute;n del Sistema
+                            <div style="display: inline-block">Resoluci&oacute;n del Sistema</div> <div style="display: inline-block;" id="metodoElegido"></div>
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -292,8 +305,8 @@
                                 <table class="table" id="sistema">
                                     <thead>
                                     <tr >
-                                        <th>Variables</th>
-                                        <th>Criterio de Paro</th>
+                                        <th id="thVariables">Variables</th>
+                                        <th colspan="3">Criterio de Paro</th>
                                     </tr>
                                     <tr >
 
@@ -306,7 +319,15 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div id="resultadoFinal" class="hidden">
+                                <div class="well well-sm">
 
+                                    <h4>Resoluci&oacute;n del Sistema</h4>
+                                    <p></p>
+
+                                </div>
+                            </div>
+                            <button class="btn btn-default" style="width: 100%;" data-action="volver">Volver al comienzo</button>
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -331,11 +352,14 @@
 <!-- Custom Theme JavaScript -->
 <script src="dependencias/dist/js/sb-admin-2.js"></script>
 
+<script src="dependencias/vendor/sweetalert/sweetalert.min.js"></script>
+
 <script type="text/javascript" src="dependencias/vendor/mathjs/math.min.js"></script>
 <script type="text/javascript" src="dependencias/vendor/mathjs/numeric.js"></script>
 
 <!-- Incluimos el archivo de logica del procesamiento de ecuaciones -->
 <script type="text/javascript" src="dependencias/PE.js"></script>
+<script type="text/javascript" src="dependencias/controller.js"></script>
 
 
 </body>
