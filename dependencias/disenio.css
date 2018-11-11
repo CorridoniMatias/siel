@@ -87,3 +87,8 @@ input.error
 {
     border-color: #a94442 !important;
 }
+
+#sistema th, #normas th
+{
+    text-align: center;
+}
