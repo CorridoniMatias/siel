@@ -110,7 +110,7 @@ function validarMatriz(matrix, comparador)
             if(i != j)
                 noDiagonal += Math.abs(matrix[i][j]);
             else
-                diagonal = matrix[i][j];
+                diagonal = Math.abs(matrix[i][j]);
         }
 
         if(!comparador(diagonal, noDiagonal)){
