@@ -4,7 +4,7 @@ SIEL (**SI**stema de **E**cuaciones **L**ineales) es un aplicativo que permite c
 Este sistema fue desarrollado como entrega del TP cuatrimestral de la materia Mátematica Superior de la [Universidad Tecnológica Nacional - Facultad Regional Buenos Aires](https://www.frba.utn.edu.ar/).
 
 # Manual de Usuario
-El manual de usuario para el sistema se puede acceder desde aquí
+El manual de usuario para el sistema se puede acceder desde [aquí](https://corridonimatias.github.io/siel/SIEL%20-%20Manual%20de%20Usuario.pdf)
 
 # Acceder al sistema
 Como el aplicativo fue desarrollado para un ambiente WEB, el mismo puede ser utilizado directamente desde [aquí](https://corridonimatias.github.io/siel)
