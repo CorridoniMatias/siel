@@ -289,8 +289,8 @@ function calcular(matrixCoeficientes, terminosIndependientes, vectorInicial, cot
 
     sistema.find("#thVariables").attr("colspan", cantEcuaciones + 1);
 
-    head.append("<th class='doubleborderleft'>Norma 1</th>")
-        .append("<th>Norma 2</th>")
+    head.append("<th class='doubleborderleft'>Norma 2</th>")
+        .append("<th>Norma 3</th>")
         .append("<th>Norma Infinito</th>");
 
 
